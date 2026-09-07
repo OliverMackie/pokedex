@@ -4,13 +4,15 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"pokedex/internal/pokecache"
+
+	pokecache "github.com/OliverMackie/pokedex/internal"
 )
 
 func main() {
-	pokecache := pokecache.NewCache(60 * 1000) // 5 minutes
+	pokedex := make(map[string]Pokemon)
+	pokecache := pokecache.NewCache(5 * 60)
 	url := "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20"
-	config := &config{getCommands(), url, nil, pokecache}
+	config := &config{getCommands(), url, nil, pokecache, &pokedex}
 	CommandMap := getCommands()
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -35,6 +37,14 @@ func main() {
 			CommandMap["map"].callback(config)
 		case "mapb":
 			CommandMap["mapb"].callback(config)
+		case "explore":
+			CommandMap["explore"].callback(config, CleanedInput[1])
+		case "catch":
+			CommandMap["catch"].callback(config, CleanedInput[1])
+		case "inspect":
+			CommandMap["inspect"].callback(config, CleanedInput[1])
+		case "pokedex":
+			CommandMap["pokedex"].callback(config)
 		default:
 			fmt.Printf("Unknown command\n")
 		}
